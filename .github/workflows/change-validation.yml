@@ -23,12 +23,16 @@ jobs:
       issues: write
       pull-requests: write
 
+  integration-openrouter:
+    uses: ./.github/workflows/integration-test-openrouter.yml
+
   required-status-checks:
     name: "Required Status Checks"  # do not change, used in ruleset "Required Status Checks"
     if: ${{ always() }}
     needs:
       - test
       - super-linter
+      - integration-openrouter
     runs-on: ubuntu-latest
     steps:
       - name: Check validation job results
