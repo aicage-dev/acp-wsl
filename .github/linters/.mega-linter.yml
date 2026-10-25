@@ -1,0 +1,32 @@
+FORMATTERS_DISABLE_ERRORS: false
+LINTER_RULES_PATH: .github/linters
+DISABLE_LINTERS:
+  - GO_GOLANGCI_LINT
+  - GO_REVIVE
+
+PRE_COMMANDS:
+  - command: ln -s .github/linters/.lycheeignore .lycheeignore
+    cwd: workspace
+    run_before_linters: true
+    continue_if_failed: false
+
+POST_COMMANDS:
+  - command: rm .lycheeignore
+  - cwd: workspace
+  - continue_if_failed: false
+
+# jscpd
+COPYPASTE_JSCPD_ARGUMENTS: "--threshold 5"
+
+# revive
+GO_REVIVE_CONFIG_FILE: revive.toml
+
+# golangci-lint
+GO_GOLANGCI_LINT_ARGUMENTS: ./...
+
+# shfmt
+BASH_SHFMT_ARGUMENTS: "--case-indent"
+
+# zizmor
+ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
