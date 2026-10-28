@@ -26,6 +26,9 @@ jobs:
   integration-openrouter:
     uses: ./.github/workflows/integration-test-openrouter.yml
 
+  winget:
+    uses: ./.github/workflows/winget.yml
+
   required-status-checks:
     name: "Required Status Checks"  # do not change, used in ruleset "Required Status Checks"
     if: ${{ always() }}
@@ -33,6 +36,7 @@ jobs:
       - test
       - super-linter
       - integration-openrouter
+      - winget
     runs-on: ubuntu-latest
     steps:
       - name: Check validation job results
