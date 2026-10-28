@@ -47,8 +47,10 @@ jobs:
           FROM $env:OLLAMA_MODEL
           PARAMETER temperature 0
           "@
+          $modelfile | wsl --distribution Ubuntu-26.04 -- `
+            bash -c 'cat > /tmp/acp-wsl-integration.Modelfile'
           # Create new local model `acp-wsl-integration` with Modelfile
-          $modelfile | wsl --distribution Ubuntu-26.04 -- ollama create acp-wsl-integration -f -
+          wsl --distribution Ubuntu-26.04 -- ollama create acp-wsl-integration -f /tmp/acp-wsl-integration.Modelfile
           # Overwrite OLLAMA_MODEL with new local model
           "OLLAMA_MODEL=acp-wsl-integration" | Add-Content $env:GITHUB_ENV
 
