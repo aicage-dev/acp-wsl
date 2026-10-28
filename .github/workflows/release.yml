@@ -72,6 +72,15 @@ jobs:
                 ./cmd/acp-path
             done
           done
+          for arch in amd64 arm64; do
+            archive_dir="$(mktemp -d)"
+            cp "dist/acp-wsl-windows-${arch}.exe" "${archive_dir}/acp-wsl.exe"
+            (
+              cd "${archive_dir}"
+              zip -q "${GITHUB_WORKSPACE}/dist/acp-wsl-windows-${arch}.zip" acp-wsl.exe
+            )
+            rm -rf "${archive_dir}"
+          done
 
       - name: Create SHA256SUMS
         run: |
@@ -105,3 +114,67 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${TARGET_SHA}" \
             --generate-notes
+
+  winget:
+    needs: release
+    runs-on: windows-2025
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download Windows release archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: pwsh
+        run: |
+          $assetDirectory = Join-Path $env:RUNNER_TEMP 'acp-wsl-release-assets'
+          New-Item -ItemType Directory -Force -Path $assetDirectory | Out-Null
+          gh release download $env:RELEASE_TAG `
+            --repo $env:GITHUB_REPOSITORY `
+            --dir $assetDirectory `
+            --pattern acp-wsl-windows-amd64.zip
+          gh release download $env:RELEASE_TAG `
+            --repo $env:GITHUB_REPOSITORY `
+            --dir $assetDirectory `
+            --pattern acp-wsl-windows-arm64.zip
+          "WINGET_ASSET_DIRECTORY=$assetDirectory" >> $env:GITHUB_ENV
+
+      - name: Generate WinGet manifest
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: pwsh
+        run: |
+          $version = $env:RELEASE_TAG -replace '^v', ''
+          $manifestDirectory = Join-Path $env:RUNNER_TEMP 'winget-manifest'
+          $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$env:RELEASE_TAG"
+          .github/scripts/New-WinGetManifest.ps1 `
+            -Version $version `
+            -ReleaseUrl $releaseUrl `
+            -AssetDirectory $env:WINGET_ASSET_DIRECTORY `
+            -OutputDirectory $manifestDirectory
+          "WINGET_MANIFEST_DIRECTORY=$manifestDirectory" >> $env:GITHUB_ENV
+
+      - name: Validate WinGet manifest
+        shell: pwsh
+        run: winget validate --manifest $env:WINGET_MANIFEST_DIRECTORY
+
+      - name: Test WinGet installation
+        shell: pwsh
+        run: |
+          winget settings --enable LocalManifestFiles
+          winget install `
+            --manifest $env:WINGET_MANIFEST_DIRECTORY `
+            --accept-package-agreements `
+            --disable-interactivity
+
+      - name: Upload WinGet manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: winget-manifest-${{ github.ref_name }}
+          path: ${{ env.WINGET_MANIFEST_DIRECTORY }}
+          if-no-files-found: error
