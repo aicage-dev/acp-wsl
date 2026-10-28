@@ -39,6 +39,7 @@ $installerEntries = foreach ($asset in $assets) {
     InstallerSha256: $hash
 "@
 }
+$installerEntries = $installerEntries -join [Environment]::NewLine
 
 $versionManifest = @"
 # yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.$manifestVersion.schema.json
@@ -77,7 +78,8 @@ NestedInstallerFiles:
   - RelativeFilePath: acp-wsl.exe
     PortableCommandAlias: acp-wsl
 Installers:
-$($installerEntries -join '')ManifestType: installer
+$installerEntries
+ManifestType: installer
 ManifestVersion: $manifestVersion
 "@
 
