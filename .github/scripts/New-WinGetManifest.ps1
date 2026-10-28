@@ -51,7 +51,7 @@ ManifestVersion: $manifestVersion
 "@
 
 $defaultLocaleManifest = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.$manifestVersion.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultlocale.$manifestVersion.schema.json
 PackageIdentifier: $packageIdentifier
 PackageVersion: $Version
 PackageLocale: en-US

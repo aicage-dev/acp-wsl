@@ -159,6 +159,24 @@ jobs:
             -OutputDirectory $manifestDirectory
           "WINGET_MANIFEST_DIRECTORY=$manifestDirectory" >> $env:GITHUB_ENV
 
+      - name: Install WinGet
+        env:
+          WINGET_CLIENT_MODULE_VERSION: 1.29.380
+          WINGET_CLIENT_VERSION: 1.12.440
+        shell: pwsh
+        run: |
+          Install-Module Microsoft.WinGet.Client `
+            -Repository PSGallery `
+            -RequiredVersion $env:WINGET_CLIENT_MODULE_VERSION `
+            -Scope CurrentUser `
+            -Force
+          Import-Module Microsoft.WinGet.Client `
+            -RequiredVersion $env:WINGET_CLIENT_MODULE_VERSION
+          Repair-WinGetPackageManager `
+            -Version $env:WINGET_CLIENT_VERSION `
+            -Force
+          winget --version
+
       - name: Validate WinGet manifest
         shell: pwsh
         run: winget validate --manifest $env:WINGET_MANIFEST_DIRECTORY
