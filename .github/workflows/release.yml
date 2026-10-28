@@ -55,22 +55,22 @@ jobs:
           cache: false
           go-version-file: go.mod
 
-      - name: Build release binaries
+      - name: Download verified Windows artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: winget-release-assets
+          path: dist
+
+      - name: Build Linux binaries
         env:
           CGO_ENABLED: "0"
         run: |
           set -euo pipefail
           mkdir -p dist
-          for os in linux windows; do
-            for arch in amd64 arm64; do
-              extension=""
-              if [[ "${os}" == windows ]]; then
-                extension=.exe
-              fi
-              GOOS="${os}" GOARCH="${arch}" go build -trimpath \
-                -o "dist/acp-wsl-${os}-${arch}${extension}" \
-                ./cmd/acp-path
-            done
+          for arch in amd64 arm64; do
+            GOOS=linux GOARCH="${arch}" go build -trimpath \
+              -o "dist/acp-wsl-linux-${arch}" \
+              ./cmd/acp-path
           done
 
       - name: Create SHA256SUMS
@@ -105,3 +105,7 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${TARGET_SHA}" \
             --generate-notes
+
+  verify-published-winget-manifest:
+    needs: release
+    uses: ./.github/workflows/winget-published.yml
