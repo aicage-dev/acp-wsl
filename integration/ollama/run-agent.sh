@@ -5,7 +5,7 @@ set -euo pipefail
 agent=$1
 root=$(cd "$(dirname "$0")/../.." && pwd)
 home=/tmp/acp-wsl-ollama-home/$agent
-ollama_model=${OLLAMA_MODEL:-qwen3:8b}
+ollama_model=${OLLAMA_MODEL:-granite4:micro}
 
 rm -rf "$home"
 mkdir -p "$home"
