@@ -16,6 +16,18 @@
         "ACP_SCHEMA_V2_VERSION:[ \\t]*[\"']?(?<currentValue>[^\\s\"']+)[\"']?[ \\t]*# renovate: datasource=(?<datasource>github-releases) depName=(?<depName>agentclientprotocol/agent-client-protocol) versioning=(?<versioning>semver)"
       ],
       "extractVersionTemplate": "^schema-v2\\.(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github\\/workflows\\/winget(?:-published)?\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "WINGET_CLIENT_VERSION:[ \\t]*[\\\"']?(?<currentValue>[^\\s\\\"']+)[\\\"']?"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "microsoft/winget-cli",
+      "versioningTemplate": "semver"
     }
   ]
 }
