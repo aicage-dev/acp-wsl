@@ -5,7 +5,7 @@ DISABLE_LINTERS:
   - GO_REVIVE
 
 PRE_COMMANDS:
-  - command: cp .github/linters/.lycheeignore.yml .
+  - command: ln -s .github/linters/.lycheeignore .
     cwd: workspace
     run_before_linters: true
     continue_if_failed: false
