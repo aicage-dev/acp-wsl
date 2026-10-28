@@ -15,7 +15,7 @@ jobs:
       matrix:
         agent: [codex, opencode, vibe]
     env:
-      OLLAMA_MODEL: granite4:micro
+      OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'granite4:micro' }}
       WSLENV: OLLAMA_MODEL/u
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
