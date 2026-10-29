@@ -34,6 +34,11 @@ jobs:
             --output "$RUNNER_TEMP/acp-schema/v2/schema.json" \
             "$ACP_SCHEMA_RELEASE_URL/schema-v${ACP_SCHEMA_V2_VERSION}/schema.unstable.json"
 
+      - name: Verify embedded ACP schemas
+        run: |
+          cmp "$RUNNER_TEMP/acp-schema/v1/schema.json" internal/transform/acpschema/v1.json
+          cmp "$RUNNER_TEMP/acp-schema/v2/schema.json" internal/transform/acpschema/v2.json
+
       - name: Run golangci-lint
         id: golangci-lint
         continue-on-error: true
