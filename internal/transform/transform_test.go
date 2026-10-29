@@ -18,7 +18,7 @@ func TestPathsInKnownV1MethodFields(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, _ := New().Transform([]byte(test.input), test.direction)
+			got, _ := New(true).Transform([]byte(test.input), test.direction)
 			if !sameJSON(got, []byte(test.want)) {
 				t.Fatalf("got %s, want %s", got, test.want)
 			}
@@ -27,7 +27,7 @@ func TestPathsInKnownV1MethodFields(t *testing.T) {
 }
 
 func TestContentFileURIsAndV2Diffs(t *testing.T) {
-	mapper := New()
+	mapper := New(true)
 	_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
 	input := []byte(`{"jsonrpc":"2.0","method":"session/update","params":{"update":{"sessionUpdate":"tool_call_update","locations":[{"path":"/mnt/c/a.go"}],"content":[{"type":"diff","changes":[{"operation":"move","oldPath":"/mnt/c/old.go","path":"/mnt/d/new.go"}]},{"type":"content","content":{"type":"resource_link","name":"x","uri":"file:///mnt/c/readme.md"}}]}}}`)
 	want := `{"jsonrpc":"2.0","method":"session/update","params":{"update":{"sessionUpdate":"tool_call_update","locations":[{"path":"C:\\a.go"}],"content":[{"type":"diff","changes":[{"operation":"move","oldPath":"C:\\old.go","path":"D:\\new.go"}]},{"type":"content","content":{"type":"resource_link","name":"x","uri":"file:///C:/readme.md"}}]}}}`
@@ -38,7 +38,7 @@ func TestContentFileURIsAndV2Diffs(t *testing.T) {
 }
 
 func TestUnsupportedMalformedAndAmbiguousValuesPassThrough(t *testing.T) {
-	mapper := New()
+	mapper := New(false)
 	for _, input := range [][]byte{
 		[]byte(`{"jsonrpc":"2.0","method":"_extension","params":{"path":"C:\\must-not-change"}}`),
 		[]byte(`{"jsonrpc":"2.0","method":"session/new","params":{"cwd":"C:relative\\file"}}`),
@@ -54,7 +54,7 @@ func TestUnsupportedMalformedAndAmbiguousValuesPassThrough(t *testing.T) {
 }
 
 func TestSessionListResponseUsesRequestCorrelation(t *testing.T) {
-	mapper := New()
+	mapper := New(true)
 	_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":"list","method":"session/list","params":{}}`), ToLinux)
 	got, _ := mapper.Transform([]byte(`{"jsonrpc":"2.0","id":"list","result":{"sessions":[{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}]}}`), ToWindows)
 	want := `{"jsonrpc":"2.0","id":"list","result":{"sessions":[{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}]}}`
@@ -65,7 +65,7 @@ func TestSessionListResponseUsesRequestCorrelation(t *testing.T) {
 
 func TestV1PermissionToolCallPaths(t *testing.T) {
 	input := []byte(`{"jsonrpc":"2.0","id":4,"method":"session/request_permission","params":{"toolCall":{"locations":[{"path":"/mnt/c/file.go"}],"content":[{"type":"diff","path":"/mnt/c/file.go","newText":"x"}]}}}`)
-	got, _ := New().Transform(input, ToWindows)
+	got, _ := New(true).Transform(input, ToWindows)
 	want := []byte(`{"jsonrpc":"2.0","id":4,"method":"session/request_permission","params":{"toolCall":{"locations":[{"path":"C:\\file.go"}],"content":[{"type":"diff","path":"C:\\file.go","newText":"x"}]}}}`)
 	if !sameJSON(got, want) {
 		t.Fatalf("got %s, want %s", got, want)
@@ -76,7 +76,7 @@ func TestV1MCPStdioCommandPath(t *testing.T) {
 	input := []byte(`{"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"C:\\work","mcpServers":[{"name":"local","command":"C:\\tools\\server.exe","args":[],"env":[]}]}}`)
 	validateACPFixture(t, 1, input)
 	want := []byte(`{"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"/mnt/c/work","mcpServers":[{"name":"local","command":"/mnt/c/tools/server.exe","args":[],"env":[]}]}}`)
-	got, _ := New().Transform(input, ToLinux)
+	got, _ := New(true).Transform(input, ToLinux)
 	if !sameJSON(got, want) {
 		t.Fatalf("got %s, want %s", got, want)
 	}
@@ -86,14 +86,14 @@ func TestV1MCPHTTPCommandExtensionPassesThrough(t *testing.T) {
 	input := []byte(`{"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"C:\\work","mcpServers":[{"type":"http","name":"remote","url":"https://example.test/mcp","headers":[],"command":"C:\\must-not-change.exe"}]}}`)
 	validateACPFixture(t, 1, input)
 	want := []byte(`{"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"/mnt/c/work","mcpServers":[{"type":"http","name":"remote","url":"https://example.test/mcp","headers":[],"command":"C:\\must-not-change.exe"}]}}`)
-	got, _ := New().Transform(input, ToLinux)
+	got, _ := New(false).Transform(input, ToLinux)
 	if !sameJSON(got, want) {
 		t.Fatalf("got %s, want %s", got, want)
 	}
 }
 
 func TestV2CommandPermissionCWD(t *testing.T) {
-	mapper := New()
+	mapper := New(true)
 	mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
 	input := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/request_permission","params":{"sessionId":"session","title":"Run command","options":[{"optionId":"allow","name":"Allow once","kind":"allow_once"}],"subject":{"type":"command","command":"pwd","cwd":"C:\\work"}}}`)
 	validateACPFixture(t, 2, input)
@@ -105,7 +105,7 @@ func TestV2CommandPermissionCWD(t *testing.T) {
 }
 
 func TestV2ForkMCPStdioCommandPath(t *testing.T) {
-	mapper := New()
+	mapper := New(true)
 	mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
 	input := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/fork","params":{"sessionId":"source","cwd":"C:\\work","mcpServers":[{"type":"stdio","name":"local","command":"C:\\tools\\server.exe","args":[]}]}}`)
 	validateACPFixture(t, 2, input)
@@ -117,7 +117,7 @@ func TestV2ForkMCPStdioCommandPath(t *testing.T) {
 }
 
 func TestV2PlanFileURI(t *testing.T) {
-	mapper := New()
+	mapper := New(true)
 	mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
 	input := []byte(`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"plan_update","plan":{"type":"file","planId":"plan","uri":"file:///C:/work/plan.md"}}}}`)
 	validateACPFixture(t, 2, input)

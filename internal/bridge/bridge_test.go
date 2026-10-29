@@ -16,7 +16,7 @@ func TestRunForwardsACPStreamsAndLogsTraffic(t *testing.T) {
 	input := bytes.NewBufferString(`{"jsonrpc":"2.0","id":1,"method":"session/new","params":{"cwd":"C:\\work"}}` + "\n")
 	var output, stderr, logOutput bytes.Buffer
 	logger := log.New(&logOutput, "", 0)
-	err := Run(input, &output, &stderr, logger, []string{os.Args[0], "-test.run=TestHelperProcess", "--"})
+	err := Run(input, &output, &stderr, logger, []string{os.Args[0], "-test.run=TestHelperProcess", "--"}, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func TestRunReportsSubprocessFailure(t *testing.T) {
 	t.Setenv("ACP_PATH_BRIDGE_HELPER", "fail")
 	var output, stderr, logOutput bytes.Buffer
 	logger := log.New(&logOutput, "", 0)
-	err := Run(bytes.NewReader(nil), &output, &stderr, logger, []string{os.Args[0], "-test.run=TestHelperProcess", "--"})
+	err := Run(bytes.NewReader(nil), &output, &stderr, logger, []string{os.Args[0], "-test.run=TestHelperProcess", "--"}, true)
 	if err == nil {
 		t.Fatal("Run returned nil error")
 	}

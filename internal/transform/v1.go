@@ -1,7 +1,7 @@
 package transform
 
 // transformV1Params maps only fields in the v1 inventory. Unlisted methods
-// and extension data remain opaque to the bridge.
+// and fields outside the ACP schema are handled separately when enabled.
 func transformV1Params(method string, params map[string]any, direction Direction) (bool, []Decision) {
 	switch method {
 	case "session/new", "session/load", "session/resume":

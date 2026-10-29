@@ -15,7 +15,7 @@ import (
 
 // Run starts commandLine and forwards ACP traffic between its standard streams.
 // When logger is non-nil, it records complete directional traffic.
-func Run(input io.Reader, output, stderr io.Writer, logger *log.Logger, commandLine []string) error {
+func Run(input io.Reader, output, stderr io.Writer, logger *log.Logger, commandLine []string, unknownFields bool) error {
 	command := exec.Command(commandLine[0], commandLine[1:]...)
 	childIn, err := command.StdinPipe()
 	if err != nil {
@@ -30,7 +30,7 @@ func Run(input io.Reader, output, stderr io.Writer, logger *log.Logger, commandL
 		return fmt.Errorf("start downstream command: %w", err)
 	}
 	logf(logger, "subprocess started: %q", commandLine)
-	mapper := transform.New()
+	mapper := transform.New(unknownFields)
 	var copyWG sync.WaitGroup
 	copyWG.Add(2)
 	go func() {

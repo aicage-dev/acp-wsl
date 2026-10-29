@@ -6,7 +6,7 @@ func transformUpdate(value any, direction Direction) (bool, []Decision) {
 		return false, nil
 	}
 	// ACP permits future update discriminators. Only the schema-defined
-	// variants below are safe to inspect; unknown updates remain opaque.
+	// variants below receive schema-specific mappings.
 	switch update["sessionUpdate"] {
 	case "user_message_chunk", "agent_message_chunk", "agent_thought_chunk", "compaction_summary_chunk", "tool_call_content_chunk":
 		return transformContent(update["content"], direction)
@@ -126,7 +126,7 @@ func transformContent(value any, direction Direction) (bool, []Decision) {
 		return false, nil
 	}
 	// Content values can carry user text. Only these typed resource fields may
-	// be file URIs; text and unknown content are never interpreted.
+	// be file URIs. Fields outside the schema are handled separately when enabled.
 	switch content["type"] {
 	case "image":
 		return transformURIs(content, direction, "uri")
