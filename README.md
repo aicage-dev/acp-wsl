@@ -31,10 +31,10 @@ acp-wsl [--unknown-fields=false] -- <agent-command> [agent-arguments]
 
 Run the proxy on either side of the boundary:
 
-| Proxy location | Command |
-| --- | --- |
-| Windows | `acp-wsl -- wsl --distribution Ubuntu -- your-acp-agent` |
-| WSL | `acp-wsl -- your-acp-agent` |
+| Proxy location | Command                                                  |
+|----------------|----------------------------------------------------------|
+| Windows        | `acp-wsl -- wsl --distribution Ubuntu -- your-acp-agent` |
+| WSL            | `acp-wsl -- your-acp-agent`                              |
 
 The command after `--` is started by `acp-wsl`. ACP messages pass between the Windows client and that command over
 standard input and output.
