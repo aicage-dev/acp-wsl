@@ -122,7 +122,7 @@ func (t *Transformer) transformMessage(message map[string]any, direction Directi
 		if !ok {
 			return false, nil
 		}
-		return t.transformParams(method, params, direction)
+		return transformKnownFields(t.version, method, "params", params, direction)
 	}
 	if id == "" {
 		return false, nil
@@ -136,10 +136,10 @@ func (t *Transformer) transformMessage(message map[string]any, direction Directi
 		t.setVersion(message["result"])
 	}
 	result, ok := message["result"].(map[string]any)
-	if !ok || method != "session/list" {
+	if !ok {
 		return false, nil
 	}
-	return transformSessionList(result, direction)
+	return transformKnownFields(t.version, method, "result", result, direction)
 }
 
 func (t *Transformer) setVersion(value any) {

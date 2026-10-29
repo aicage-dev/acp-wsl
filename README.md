@@ -85,14 +85,15 @@ ACP path fields remain mapped. Free text, command arguments, environment values,
 | `C:\work\project` → `/mnt/c/work/project`                | `/mnt/c/work/project` → `C:\work\project`                |
 | `file:///C:/work/project` → `file:///mnt/c/work/project` | `file:///mnt/c/work/project` → `file:///C:/work/project` |
 
-ACP v1 and v2 filesystem fields and typed `file:` URIs are mapped. UNC paths, drive-relative paths such as
-`C:work`, and current-drive-rooted paths such as `\work` are forwarded unchanged; the proxy cannot determine their
-absolute location.
+Mapped fields in official ACP are defined in:
 
-Path-field coverage is tracked in:
+- [v1](internal/transform/pathrules/v1.json): see [ACP v1 filesystem field inventory](doc/protocol/v1-path-fields.md)
+- [v2](internal/transform/pathrules/v2.json): see [ACP v2 filesystem field inventory](doc/protocol/v2-path-fields.md)
 
-- [ACP v1 filesystem field inventory](doc/protocol/v1-path-fields.md)
-- []ACP v2 filesystem field inventory(doc/protocol/v2-path-fields.md)
+ACP v1 and v2 filesystem fields and typed `file:` URIs are mapped.
+
+UNC paths, drive-relative paths such as `C:work`, and current-drive-rooted paths such as `\work` are forwarded
+unchanged; the proxy cannot determine their absolute location.
 
 ## Debugging
 

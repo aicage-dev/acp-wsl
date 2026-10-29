@@ -208,51 +208,12 @@ func TestMalformedTypedContentPassesThrough(t *testing.T) {
 	}
 }
 
-func TestToolCallMalformedValuesAreIgnored(t *testing.T) {
-	if changed, _ := transformToolCall("not an object", ToLinux); changed {
-		t.Fatal("non-object tool call was transformed")
-	}
-	if changed, _ := transformLocations("not a list", ToLinux); changed {
-		t.Fatal("non-list locations were transformed")
-	}
-	if changed, _ := transformToolContentList(42, ToLinux); changed {
-		t.Fatal("non-list content was transformed")
-	}
-	if changed, _ := transformToolContent(nil, ToLinux); changed {
-		t.Fatal("non-object tool content was transformed")
-	}
-	if changed, _ := transformToolContent(map[string]any{"type": "unknown"}, ToLinux); changed {
-		t.Fatal("unknown tool content was transformed")
-	}
-
-	call := map[string]any{
-		"locations": []any{
-			nil,
-			map[string]any{"path": `C:\work\location.go`},
-		},
-		"content": map[string]any{
-			"type": "diff",
-			"path": `C:\work\current.go`,
-			"changes": []any{
-				nil,
-				map[string]any{"oldPath": `C:\work\old.go`, "path": `C:\work\new.go`},
-			},
-		},
-	}
-	changed, _ := transformToolCall(call, ToLinux)
-	if !changed {
-		t.Fatal("tool call was not transformed")
-	}
-	if got := call["locations"].([]any)[1].(map[string]any)["path"]; got != "/mnt/c/work/location.go" {
-		t.Fatalf("location path = %q", got)
-	}
-	content := call["content"].(map[string]any)
-	if content["path"] != "/mnt/c/work/current.go" {
-		t.Fatalf("diff path = %q", content["path"])
-	}
-	change := content["changes"].([]any)[1].(map[string]any)
-	if change["oldPath"] != "/mnt/c/work/old.go" || change["path"] != "/mnt/c/work/new.go" {
-		t.Fatalf("diff change = %#v", change)
+func TestToolCallRuleSkipsMalformedValues(t *testing.T) {
+	input := []byte(`{"method":"session/update","params":{"update":{"sessionUpdate":"tool_call","toolCall":{"locations":[null,{"path":"C:\\work\\location.go"}],"content":{"type":"diff","path":"C:\\work\\current.go","changes":[null,{"oldPath":"C:\\work\\old.go","path":"C:\\work\\new.go"}]}}}}}`)
+	want := []byte(`{"method":"session/update","params":{"update":{"sessionUpdate":"tool_call","toolCall":{"locations":[null,{"path":"/mnt/c/work/location.go"}],"content":{"type":"diff","path":"/mnt/c/work/current.go","changes":[null,{"oldPath":"/mnt/c/work/old.go","path":"/mnt/c/work/new.go"}]}}}}}`)
+	got, _ := New(false).Transform(input, ToLinux)
+	if !sameJSON(got, want) {
+		t.Fatalf("got %s, want %s", got, want)
 	}
 }
 

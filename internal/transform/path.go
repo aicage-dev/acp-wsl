@@ -6,61 +6,15 @@ import (
 	"strings"
 )
 
-func transformPaths(object map[string]any, direction Direction, fields ...string) (bool, []Decision) {
-	changed := false
-	var decisions []Decision
-	for _, field := range fields {
-		switch value := object[field].(type) {
-		case string:
-			converted, decision := convertPath(value, direction)
-			if decision.Kind != "" {
-				decision.Field = field
-				decisions = append(decisions, decision)
-			}
-			if converted != value {
-				object[field] = converted
-				changed = true
-			}
-		case []any:
-			for index, entry := range value {
-				text, ok := entry.(string)
-				if !ok {
-					continue
-				}
-				converted, decision := convertPath(text, direction)
-				if decision.Kind != "" {
-					decision.Field = field
-					decisions = append(decisions, decision)
-				}
-				if converted != text {
-					value[index] = converted
-					changed = true
-				}
-			}
-		}
+func convertLocation(input string, direction Direction) (string, Decision) {
+	if driveAbsolute.MatchString(input) || mountPath.MatchString(input) {
+		return convertPath(input, direction)
 	}
-	return changed, decisions
-}
-
-func transformURIs(object map[string]any, direction Direction, fields ...string) (bool, []Decision) {
-	changed := false
-	var decisions []Decision
-	for _, field := range fields {
-		raw, ok := object[field].(string)
-		if !ok {
-			continue
-		}
-		converted, decision := convertURI(raw, direction)
-		if decision.Kind != "" {
-			decision.Field = field
-			decisions = append(decisions, decision)
-		}
-		if converted != raw {
-			object[field] = converted
-			changed = true
-		}
+	uri, err := url.Parse(input)
+	if err == nil && uri.Scheme != "" {
+		return convertURI(input, direction)
 	}
-	return changed, decisions
+	return convertPath(input, direction)
 }
 
 var driveAbsolute = regexp.MustCompile(`^[A-Za-z]:[\\/]`)
