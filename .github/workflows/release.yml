@@ -84,6 +84,7 @@ jobs:
       - name: Create SHA256SUMS
         run: |
           set -euo pipefail
+          cp .github/versions/acp-schema.yml dist/acp-schema-versions.yml
           cd dist
           LC_ALL=C find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -print0 | \
             sort -z | \

@@ -8,7 +8,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github\\/workflows\\/.*\\.ya?ml$/"],
+      "managerFilePatterns": ["/^\\.github\\/.*\\/.*\\.ya?ml$/"],
       "matchStrings": [
         "[A-Za-z][A-Za-z0-9_ -]*:[ \\t]*[\"']?(?<currentValue>[^\\s\"']+)[\"']?[ \\t]*# renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?(?: extractVersion=(?<extractVersion>[^\\s]+))?"
       ],

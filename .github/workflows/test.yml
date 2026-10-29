@@ -21,11 +21,9 @@ jobs:
       - name: Download ACP schemas
         env:
           ACP_SCHEMA_RELEASE_URL: https://github.com/agentclientprotocol/agent-client-protocol/releases/download
-          # yamllint disable-line rule:line-length
-          ACP_SCHEMA_V1_VERSION: "1.26.0" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v1\.(?<version>.*)$
-          # yamllint disable-line rule:line-length
-          ACP_SCHEMA_V2_VERSION: "2.0.0-alpha.9" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v2\.(?<version>.*)$
         run: |
+          ACP_SCHEMA_V1_VERSION="$(awk '$1 == "v1:" { print $2 }' .github/versions/acp-schema.yml)"
+          ACP_SCHEMA_V2_VERSION="$(awk '$1 == "v2:" { print $2 }' .github/versions/acp-schema.yml)"
           mkdir -p "$RUNNER_TEMP/acp-schema/v1" "$RUNNER_TEMP/acp-schema/v2"
           curl --fail --location --retry 3 \
             --output "$RUNNER_TEMP/acp-schema/v1/schema.json" \
