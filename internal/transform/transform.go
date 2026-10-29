@@ -1,11 +1,11 @@
 // Package transform rewrites documented ACP path fields between Windows
-// clients and Linux agents without interpreting extension data.
+// clients and Linux agents, with optional conversion for fields outside ACP schemas.
 package transform
 
 import (
 	"bytes"
 	"encoding/json"
-	"strconv"
+	"io"
 	"sync"
 )
 
@@ -24,15 +24,19 @@ type Decision struct{ Field, Kind, Input, Output string }
 
 // Transformer retains only JSON-RPC routing state and the negotiated version.
 type Transformer struct {
-	mu      sync.Mutex
-	version int
-	pending map[string]string
+	mu            sync.Mutex
+	version       int
+	pending       map[string]string
+	unknownFields bool
 }
 
 // New creates a Transformer for ACP protocol version 1.
-func New() *Transformer { return &Transformer{version: 1, pending: make(map[string]string)} }
+// unknownFields enables path conversion in fields outside the ACP schema.
+func New(unknownFields bool) *Transformer {
+	return &Transformer{version: 1, pending: make(map[string]string), unknownFields: unknownFields}
+}
 
-// Transform rewrites documented path fields in one ACP message.
+// Transform rewrites path fields in one message.
 func (t *Transformer) Transform(line []byte, direction Direction) ([]byte, []Decision) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -40,7 +44,13 @@ func (t *Transformer) Transform(line []byte, direction Direction) ([]byte, []Dec
 		return line, nil
 	}
 	var message any
-	if json.Unmarshal(bytes.TrimSpace(line), &message) != nil {
+	decoder := json.NewDecoder(bytes.NewReader(line))
+	decoder.UseNumber()
+	if decoder.Decode(&message) != nil {
+		return line, []Decision{{Kind: "malformed"}}
+	}
+	var extra any
+	if decoder.Decode(&extra) != io.EOF {
 		return line, []Decision{{Kind: "malformed"}}
 	}
 	changed, decisions := t.transformValue(message, direction)
@@ -71,10 +81,31 @@ func (t *Transformer) transformValue(value any, direction Direction) (bool, []De
 		}
 		return changed, decisions
 	case map[string]any:
-		return t.transformMessage(value, direction)
+		catalog := t.catalogFor(value)
+		schemaValid := catalog.validates(value)
+		if t.unknownFields && !schemaValid {
+			fallbackChanged, fallbackDecisions := transformUnknownFields(value, t.pending, catalog, direction)
+			changed, decisions := t.transformMessage(value, direction)
+			return changed || fallbackChanged, append(fallbackDecisions, decisions...)
+		}
+		changed, decisions := t.transformMessage(value, direction)
+		return changed, decisions
 	default:
 		return false, nil
 	}
+}
+
+func (t *Transformer) catalogFor(message map[string]any) *schemaCatalog {
+	if method, _ := message["method"].(string); method == "initialize" {
+		if params, ok := message["params"].(map[string]any); ok {
+			if number, ok := params["protocolVersion"].(json.Number); ok {
+				if version, err := number.Int64(); err == nil && (version == 1 || version == 2) {
+					return catalogs[int(version)]
+				}
+			}
+		}
+	}
+	return catalogs[t.version]
 }
 
 func (t *Transformer) transformMessage(message map[string]any, direction Direction) (bool, []Decision) {
@@ -116,16 +147,18 @@ func (t *Transformer) setVersion(value any) {
 	if !ok {
 		return
 	}
-	if version, ok := params["protocolVersion"].(float64); ok && (version == 1 || version == 2) {
-		t.version = int(version)
+	if number, ok := params["protocolVersion"].(json.Number); ok {
+		if version, err := number.Int64(); err == nil && (version == 1 || version == 2) {
+			t.version = int(version)
+		}
 	}
 }
 func requestID(value any) string {
 	switch id := value.(type) {
 	case string:
 		return "s:" + id
-	case float64:
-		return "n:" + strconv.FormatFloat(id, 'g', -1, 64)
+	case json.Number:
+		return "n:" + id.String()
 	}
 	return ""
 }

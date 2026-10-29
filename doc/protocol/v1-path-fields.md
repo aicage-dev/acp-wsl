@@ -2,9 +2,8 @@
 
 This inventory is derived from the ACP v1 schema in the `agentclientprotocol/agent-client-protocol` repository.
 
-It defines the fields the bridge may rewrite.
-
-All other fields, including extension payloads and natural-language content, are forwarded unchanged.
+It defines the schema-specific mappings. Other payload values are inspected by the default
+[unknown fields](path-field-inventory.md#unknown-fields), which can be disabled.
 
 ## Client to agent
 

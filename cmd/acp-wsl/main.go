@@ -23,6 +23,7 @@ func main() {
 func run(args []string, input io.Reader, output, stderr io.Writer) error {
 	flags := flag.NewFlagSet("acp-wsl", flag.ContinueOnError)
 	flags.SetOutput(stderr)
+	unknownFields := flags.Bool("unknown-fields", true, "translate paths in fields outside the ACP schema")
 	showVersion := flags.Bool("version", false, "print version and exit")
 	hasSeparator := false
 	for _, argument := range args {
@@ -45,5 +46,5 @@ func run(args []string, input io.Reader, output, stderr io.Writer) error {
 	if !hasSeparator || len(rest) == 0 {
 		return errors.New("downstream command must follow --")
 	}
-	return bridge.Run(input, output, stderr, nil, rest)
+	return bridge.Run(input, output, stderr, nil, rest, *unknownFields)
 }
