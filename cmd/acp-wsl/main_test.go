@@ -136,3 +136,42 @@ func runFakeAgent() int {
 	}
 	return 0
 }
+
+func TestRunUnknownPathFallbackFlag(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		flags []string
+		want  string
+	}{
+		{"default", nil, "/mnt/c/work"},
+		{"enabled", []string{"--unknown-fields=true"}, "/mnt/c/work"},
+		{"disabled", []string{"--unknown-fields=false"}, `C:\work`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			captureFile := filepath.Join(t.TempDir(), "input.json")
+			t.Setenv("ACP_PATH_TEST_AGENT", "capture")
+			t.Setenv("ACP_PATH_TEST_CAPTURE", captureFile)
+			args := append([]string{}, test.flags...)
+			args = append(args, "--", os.Args[0])
+			input := bytes.NewBufferString(`{"id":4,"method":"skills/extraRoots/set","params":{"extraRoots":["C:\\work"]}}` + "\n")
+			var stdout, stderr bytes.Buffer
+			if err := run(args, input, &stdout, &stderr); err != nil {
+				t.Fatal(err)
+			}
+			received, err := os.ReadFile(captureFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var message struct{ Params struct{ ExtraRoots []string } }
+			if err := json.Unmarshal(received, &message); err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(message.Params.ExtraRoots, []string{test.want}) {
+				t.Fatalf("received %s, want path %q", received, test.want)
+			}
+			if stdout.Len() != 0 || stderr.Len() != 0 {
+				t.Fatalf("unexpected output: stdout=%q stderr=%q", stdout.String(), stderr.String())
+			}
+		})
+	}
+}

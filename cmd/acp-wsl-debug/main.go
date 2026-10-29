@@ -26,6 +26,7 @@ func run(args []string, input io.Reader, output, stderr io.Writer) error {
 	flags := flag.NewFlagSet("acp-wsl-debug", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	logFile := flags.String("log-file", "", "write complete raw traffic to this file (required)")
+	unknownFields := flags.Bool("unknown-fields", true, "translate paths in fields outside the ACP schema")
 	showVersion := flags.Bool("version", false, "print version and exit")
 	hasSeparator := false
 	for _, argument := range args {
@@ -57,7 +58,7 @@ func run(args []string, input io.Reader, output, stderr io.Writer) error {
 	}
 	defer logWriter.Close()
 	logger := log.New(logWriter, "", log.LstdFlags|log.Lmicroseconds)
-	return bridge.Run(input, output, stderr, logger, rest)
+	return bridge.Run(input, output, stderr, logger, rest, *unknownFields)
 }
 
 func openLog(name string) (*os.File, error) {

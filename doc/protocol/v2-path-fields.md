@@ -2,7 +2,7 @@
 
 This inventory is derived from the ACP v2 schema in the`agentclientprotocol/agent-client-protocol` repository.
 
-It defines the fields the bridge may rewrite.
+It defines the schema-specific mappings.
 
 The v2 router is separate from v1 because v2 changed tool-call diffs and terminal reporting.
 
@@ -22,5 +22,6 @@ The v2 router is separate from v1 because v2 changed tool-call diffs and termina
 
 `file:` URIs in typed resource, image, and resource-link icon fields are converted.
 
-HTTP URLs, elicitation URLs, MCP URLs, extension fields, raw tool input/output, and all unknown tagged-union values are
-forwarded unchanged.
+HTTP URLs, elicitation URLs, and MCP URLs are forwarded unchanged. Other unmapped payload values, including extensions
+and unknown tagged-union variants, are inspected by the default
+[unknown fields](path-field-inventory.md#unknown-fields), which can be disabled.

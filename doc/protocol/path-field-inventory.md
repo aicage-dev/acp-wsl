@@ -12,8 +12,17 @@ the schema defines it as one of:
 
 Map only the documented field within its known method and tagged-union variant.
 
-Command arguments, environment values, free text, HTTP URLs, extension payloads, and unknown union variants remain
-unchanged: the protocol does not establish them as paths or give the bridge enough meaning to rewrite them safely.
+## Unknown fields
 
-When a schema release changes, repeat the inventory review, update the versioned inventory, and add a schema-validated
-mapping test for each newly included field.
+Embedded schemas identify fields outside ACP. `--unknown-fields` is enabled by default and rewrites whole-string
+absolute paths in those fields:
+
+- `C:\work` or `C:/work` becomes `/mnt/c/work` toward Linux.
+- `/mnt/c/work` becomes `C:\work` toward Windows.
+
+Set `--unknown-fields=false` to disable this pass.
+
+Schema-defined command arguments, environment values, free text, HTTP URLs, and tagged-union values remain unchanged.
+
+When a schema release changes, update the embedded release asset, repeat the inventory review, update the versioned
+inventory, and add a schema-validated mapping test for each newly included field.
