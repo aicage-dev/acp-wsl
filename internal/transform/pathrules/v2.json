@@ -30,17 +30,12 @@
     {
       "method": "session/list",
       "payload": "params",
-      "selectors": [
-        "cwd"
-      ]
+      "selectors": ["cwd"]
     },
     {
       "method": "session/list",
       "payload": "result",
-      "selectors": [
-        "sessions[].cwd",
-        "sessions[].additionalDirectories[]"
-      ]
+      "selectors": ["sessions[].cwd", "sessions[].additionalDirectories[]"]
     },
     {
       "method": "session/prompt",
@@ -55,9 +50,7 @@
     {
       "method": "session/request_permission",
       "payload": "params",
-      "selectors": [
-        "subject[type=command].cwd"
-      ]
+      "selectors": ["subject[type=command].cwd"]
     },
     {
       "method": "session/update",
