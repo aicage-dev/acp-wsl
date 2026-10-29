@@ -1,4 +1,4 @@
-name: lint (megalinter, self-hosted)
+name: lint (megalinter)
 
 "on":
   workflow_call:
