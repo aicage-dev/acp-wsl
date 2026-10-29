@@ -46,7 +46,7 @@ jobs:
         env:
           WINGET_CLIENT_MODULE_VERSION: 1.29.380
           # yamllint disable-line rule:line-length
-          WINGET_CLIENT_VERSION: 1.12.350 # renovate: datasource=github-releases depName=microsoft/winget-cli versioning=semver
+          WINGET_CLIENT_VERSION: 1.29.380 # renovate: datasource=github-releases depName=microsoft/winget-cli versioning=semver
         shell: pwsh
         run: |
           Install-Module Microsoft.WinGet.Client -Repository PSGallery `
