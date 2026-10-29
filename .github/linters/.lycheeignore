@@ -2,3 +2,5 @@
 ^https://github.com/agentclientprotocol/agent-client-protocol/releases/download$
 # Ignore URL with variables
 ^https://github.com/\$env:GITHUB_REPOSITORY/.*$
+# Ignore protocol URLs in the ACP v1 and v2 schema JSON files
+^https://agentclientprotocol.com/protocol/.*$
