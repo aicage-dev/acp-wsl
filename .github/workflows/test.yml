@@ -22,9 +22,9 @@ jobs:
         env:
           ACP_SCHEMA_RELEASE_URL: https://github.com/agentclientprotocol/agent-client-protocol/releases/download
           # yamllint disable-line rule:line-length
-          ACP_SCHEMA_V1_VERSION: "1.26.0" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v1\.(?<version>.*)$
+          ACP_SCHEMA_V1_VERSION: "1.25.0" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v1\.(?<version>.*)$
           # yamllint disable-line rule:line-length
-          ACP_SCHEMA_V2_VERSION: "2.0.0-alpha.9" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v2\.(?<version>.*)$
+          ACP_SCHEMA_V2_VERSION: "2.0.0-alpha.8" # renovate: datasource=github-releases depName=agentclientprotocol/agent-client-protocol versioning=semver extractVersion=^schema-v2\.(?<version>.*)$
         run: |
           mkdir -p "$RUNNER_TEMP/acp-schema/v1" "$RUNNER_TEMP/acp-schema/v2"
           curl --fail --location --retry 3 \
@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: v2.14.0 # renovate: datasource=github-releases depName=golangci/golangci-lint versioning=semver
+          version: v2.13.0 # renovate: datasource=github-releases depName=golangci/golangci-lint versioning=semver
           args: --config=${{ github.workspace }}/.github/linters/.golangci.yml
           experimental: automatic-module-directories
 
@@ -47,7 +47,7 @@ jobs:
         id: revive
         continue-on-error: true
         env:
-          REVIVE_VERSION: v1.17.1 # renovate: datasource=github-releases depName=mgechev/revive versioning=semver
+          REVIVE_VERSION: v1.17.0 # renovate: datasource=github-releases depName=mgechev/revive versioning=semver
         run: |
           go install github.com/mgechev/revive@"$REVIVE_VERSION"
           revive -set_exit_status -config .github/linters/revive.toml ./...
