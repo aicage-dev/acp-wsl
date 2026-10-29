@@ -30,17 +30,12 @@
     {
       "method": "session/list",
       "payload": "params",
-      "selectors": [
-        "cwd"
-      ]
+      "selectors": ["cwd"]
     },
     {
       "method": "session/list",
       "payload": "result",
-      "selectors": [
-        "sessions[].cwd",
-        "sessions[].additionalDirectories[]"
-      ]
+      "selectors": ["sessions[].cwd", "sessions[].additionalDirectories[]"]
     },
     {
       "method": "session/prompt",
@@ -55,23 +50,17 @@
     {
       "method": "fs/read_text_file",
       "payload": "params",
-      "selectors": [
-        "path"
-      ]
+      "selectors": ["path"]
     },
     {
       "method": "fs/write_text_file",
       "payload": "params",
-      "selectors": [
-        "path"
-      ]
+      "selectors": ["path"]
     },
     {
       "method": "terminal/create",
       "payload": "params",
-      "selectors": [
-        "cwd"
-      ]
+      "selectors": ["cwd"]
     },
     {
       "method": "session/update",
