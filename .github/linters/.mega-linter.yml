@@ -22,7 +22,7 @@ GO_GOLANGCI_LINT_ARGUMENTS: ./...
 COPYPASTE_JSCPD_ARGUMENTS: "--threshold 5"
 
 # prettier
-JSON_PRETTIER_FILTER_REGEX_EXCLUDE: "acp-wsl/internal/transform/pathrules/v[12]\.json"
+JSON_PRETTIER_FILTER_REGEX_EXCLUDE: 'acp-wsl/internal/transform/pathrules/v[12]\.json'
 
 # revive
 GO_REVIVE_CONFIG_FILE: revive.toml
