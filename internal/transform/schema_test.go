@@ -15,6 +15,23 @@ func TestV2PermissionFixtureMatchesProtocolSchema(t *testing.T) {
 	validateACPFixture(t, 2, valid)
 }
 
+func TestNewSchemaCatalogDoesNotDependOnWorkingDirectory(t *testing.T) {
+	original, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(t.TempDir()); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(original); err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	newSchemaCatalog(schemaV1)
+}
+
 func validateACPFixture(t *testing.T, version int, fixture []byte) {
 	t.Helper()
 	if err := validateACP(version, fixture); err != nil {

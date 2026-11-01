@@ -22,6 +22,8 @@ type schemaCatalog struct {
 	validator *jsonschema.Schema
 }
 
+const schemaResourceURI = "https://acp-wsl.invalid/schema.json"
+
 var catalogs = map[int]*schemaCatalog{
 	1: newSchemaCatalog(schemaV1),
 	2: newSchemaCatalog(schemaV2),
@@ -40,10 +42,10 @@ func newSchemaCatalog(source []byte) *schemaCatalog {
 		results: make(map[string][]map[string]any),
 	}
 	compiler := jsonschema.NewCompiler()
-	if err := compiler.AddResource("schema.json", root); err != nil {
+	if err := compiler.AddResource(schemaResourceURI, root); err != nil {
 		panic(err)
 	}
-	validator, err := compiler.Compile("schema.json")
+	validator, err := compiler.Compile(schemaResourceURI)
 	if err != nil {
 		panic(err)
 	}
