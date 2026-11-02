@@ -83,28 +83,47 @@ ACP v1 and v2 filesystem fields and typed `file:` URIs are mapped.
 UNC paths, drive-relative paths such as `C:work`, and current-drive-rooted paths such as `\work` are forwarded
 unchanged; the proxy cannot determine their absolute location.
 
+## IDE setup examples
+
+Here are configuration examples for the communication of IDE plugins on Windows to agents in WSL.
+
+1. Install the IDE plugin.
+2. Install `acp-wsl` either on Windows or in WSL.
+3. Copy the entry for the agent and proxy location you want into the plugin configuration.
+
+<!-- markdownlint-disable line-length -->
+| IDE       | Plugin                                                                                     | Example configuration                                                |
+|-----------|--------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| VS Code   | [ACP Client](https://marketplace.visualstudio.com/items?itemName=formulahendry.acp-client) | [settings.json](doc/example/config/ide-plugins/VScode/settings.json) |
+| JetBrains | [AI Assistant](https://www.jetbrains.com/help/ai-assistant/activate-agents.html)           | [acp.json](doc/example/config/ide-plugins/JetBrains/acp.json)        |
+<!-- markdownlint-enable line-length -->
+
+> The agent and its adapters should run with WSL's Node.js and npm — not node/npm in Windows inherited through `PATH`.
+
+### ACP adapters
+
+Also install the ACP adapter for these agents:
+
+- Amp: [amp-acl](https://github.com/tao12345666333/amp-acp)
+- Claude: [claude-agent-acp](https://github.com/agentclientprotocol/claude-agent-acp)
+- Codex: [codex-acp](https://github.com/agentclientprotocol/codex-acp/)
+
 ## Debugging
 
-`acp-wsl-debug` behaves like `acp-wsl` unless logging is enabled.
-
-Release downloads provide all debug binaries in `acp-wsl-debug.zip`.
+`acp-wsl-debug` behaves like `acp-wsl` with the additional option `--log-file`.
 
 ```text
 acp-wsl-debug --log-file <path> -- <agent-command> [agent-arguments]
 ```
 
-`--log-file <path>` enables a complete traffic log. The log records client-to-agent and agent-to-client messages before
-and after mapping, path-mapping decisions, and downstream process lifecycle events.
-
-`--unknown-fields=false`, `--version`, and `--help` have the same behavior as in `acp-wsl`.
+`--log-file <path>` logs forwarded ACP traffic before and after mapping, mapping decisions, stream errors, and agent
+process exit status.
 
 > Warning: The log contains raw ACP traffic, including API keys, credentials, prompts, source paths, and agent output.
 
-Download the debug command from the latest release ([acp-wsl-debug.zip](https://github.com/aicage/acp-wsl/releases/latest))
-
-https://github.com/aicage-dev/acp-wsl/releases/download/latest/acp-schema-versions.yml
-
-Build the debug command from source:
+Download the debug command from the latest release
+([acp-wsl-debug.zip](https://github.com/aicage/acp-wsl/releases/latest/download/acp-wsl-debug.zip)) or build it from
+source:
 
 ```text
 go build ./cmd/acp-wsl-debug
