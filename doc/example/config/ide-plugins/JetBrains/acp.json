@@ -1,0 +1,85 @@
+{
+  "default_mcp_settings": {},
+  "agent_servers": {
+    "Auggie (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "auggie", "--acp"]
+    },
+    "Auggie (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "auggie", "--acp"]
+    },
+    "Copilot (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "copilot", "--acp", "--stdio"]
+    },
+    "Copilot (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "copilot", "--acp", "--stdio"]
+    },
+    "Factory Droid (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "droid", "exec", "--output-format", "acp"]
+    },
+    "Factory Droid (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "droid", "exec", "--output-format", "acp"]
+    },
+    "Goose (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "goose", "acp"]
+    },
+    "Goose (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "goose", "acp"]
+    },
+    "Kiro (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "kiro-cli", "acp"]
+    },
+    "Kiro (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "kiro-cli", "acp"]
+    },
+    "OpenCode (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "opencode", "acp"]
+    },
+    "OpenCode (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "opencode", "acp"]
+    },
+    "Qwen (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "qwen", "--acp"]
+    },
+    "Qwen (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "qwen", "--acp"]
+    },
+    "Amp (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "amp-acp"]
+    },
+    "Amp (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "amp-acp"]
+    },
+    "Claude (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "claude-agent-acp"]
+    },
+    "Claude (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "claude-agent-acp"]
+    },
+    "Codex (acp-wsl in WSL)": {
+      "command": "C:\\Windows\\system32\\wsl.exe",
+      "args": ["--distribution", "Ubuntu", "--", "acp-wsl", "--", "codex-acp"]
+    },
+    "Codex (acp-wsl in Windows)": {
+      "command": "C:\\Users\\stefa\\.local\\bin\\acp-wsl.exe",
+      "args": ["--", "wsl", "--distribution", "Ubuntu", "--", "codex-acp"]
+    }
+  }
+}

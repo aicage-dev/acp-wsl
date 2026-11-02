@@ -103,3 +103,28 @@ Build the debug command from source:
 ```text
 go build ./cmd/acp-wsl-debug
 ```
+
+## IDE setup examples
+
+Here are configuration examples for the communication of IDE plugins on Windows to agents in WSL.
+
+1. Install the IDE plugin.
+2. Install `acp-wsl` either on Windows or in WSL.
+3. Copy the entry for the agent and proxy location you want into the plugin configuration.
+
+<!-- markdownlint-disable line-length -->
+| IDE       | Plugin                                                                                     | Example configuration                                                |
+|-----------|--------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| VS Code   | [ACP Client](https://marketplace.visualstudio.com/items?itemName=formulahendry.acp-client) | [settings.json](doc/example/config/ide-plugins/VScode/settings.json) |
+| JetBrains | [AI Assistant](https://www.jetbrains.com/help/ai-assistant/activate-agents.html)           | [acp.json](doc/example/config/ide-plugins/JetBrains/acp.json)        |
+<!-- markdownlint-enable line-length -->
+
+> The agent and its adapters should run with WSL's Node.js and npm — not node/npm in Windows inherited through `PATH`.
+
+### ACP adapters
+
+Also install the ACP adapter for these agents:
+
+- Amp: [amp-acl](https://github.com/tao12345666333/amp-acp)
+- Claude: [claude-agent-acp](https://github.com/agentclientprotocol/claude-agent-acp)
+- Codex: [codex-acp](https://github.com/agentclientprotocol/codex-acp/)
