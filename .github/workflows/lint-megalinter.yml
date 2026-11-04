@@ -91,8 +91,6 @@ jobs:
           APPLY_FIXES: ${{ env.FIX_MODE != 'none' && 'all' || 'none' }}
           APPLY_FIXES_EVENT: ${{ github.event_name }}
           APPLY_FIXES_MODE: pull_request
-          GOMODCACHE: /tmp/go/pkg/mod
-          GOCACHE: /tmp/go-build
           REPORT_OUTPUT_FOLDER: ${{ runner.temp }}/megalinter-reports
           MEGALINTER_UID: ${{ env.MEGALINTER_UID }}
           MEGALINTER_GID: ${{ env.MEGALINTER_GID }}
