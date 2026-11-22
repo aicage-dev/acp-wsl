@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-22
+
+### Added
+
+- ACP v2 path translation for session options, skill commands, subagent workspaces, and Markdown plan files.
+
+### Changed
+
+- Updated supported ACP schemas to v1.33.0 and v2.0.0-alpha.17.
+
 ## [1.0.1] - 2026-11-22
 
 ### Changed
