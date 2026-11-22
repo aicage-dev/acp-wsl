@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-22
+
+### Added
+
+- ACP v1 path translation for Markdown plan files, subagent workspaces, and session message content.
+
+### Changed
+
+- Updated supported ACP schemas to v1.34.1 and v2.0.0-beta.3.
+- Migrated Markdown lint configuration to JSON.
+
 ## [1.0.2] - 2026-11-22
 
 ### Added
