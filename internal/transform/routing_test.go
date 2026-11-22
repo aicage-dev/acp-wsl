@@ -1,0 +1,89 @@
+package transform
+
+import "testing"
+
+func TestJSONRPCLifecycleEdgeCases(t *testing.T) {
+	t.Run("nonstandard request ID does not correlate response", func(t *testing.T) {
+		mapper := New(false)
+		request := []byte(`{"jsonrpc":"2.0","id":true,"method":"session/list","params":{"cwd":"C:\\work"}}`)
+		got, _ := mapper.Transform(request, ToLinux)
+		wantRequest := []byte(`{"jsonrpc":"2.0","id":true,"method":"session/list","params":{"cwd":"/mnt/c/work"}}`)
+		if !sameJSON(got, wantRequest) {
+			t.Fatalf("request = %s, want %s", got, wantRequest)
+		}
+
+		response := []byte(`{"jsonrpc":"2.0","id":true,"result":{"sessions":[{"cwd":"/mnt/c/work"}]}}`)
+		got, _ = mapper.Transform(response, ToWindows)
+		if !sameJSON(got, response) {
+			t.Fatalf("response = %s, want unchanged %s", got, response)
+		}
+	})
+
+	t.Run("uncorrelated response is unchanged", func(t *testing.T) {
+		response := []byte(`{"jsonrpc":"2.0","id":"missing","result":{"sessions":[{"cwd":"/mnt/c/work"}]}}`)
+		got, _ := New(false).Transform(response, ToWindows)
+		if !sameJSON(got, response) {
+			t.Fatalf("response = %s, want unchanged %s", got, response)
+		}
+	})
+
+	t.Run("request without params can still correlate its response", func(t *testing.T) {
+		mapper := New(false)
+		_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"session/list"}`), ToLinux)
+		response := []byte(`{"jsonrpc":"2.0","id":1,"result":{"sessions":[{"cwd":"/mnt/c/work"}]}}`)
+		got, _ := mapper.Transform(response, ToWindows)
+		want := []byte(`{"jsonrpc":"2.0","id":1,"result":{"sessions":[{"cwd":"C:\\work"}]}}`)
+		if !sameJSON(got, want) {
+			t.Fatalf("response = %s, want %s", got, want)
+		}
+	})
+
+	for _, initialize := range []string{
+		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":3}}`,
+		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2"}}`,
+		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2.5}}`,
+		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":null}`,
+	} {
+		t.Run("invalid version retains v1 routing", func(t *testing.T) {
+			mapper := New(false)
+			_, _ = mapper.Transform([]byte(initialize), ToLinux)
+			fork := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/fork","params":{"cwd":"C:\\work"}}`)
+			got, _ := mapper.Transform(fork, ToLinux)
+			if !sameJSON(got, fork) {
+				t.Fatalf("fork = %s, want unchanged %s", got, fork)
+			}
+		})
+	}
+
+	t.Run("initialize response negotiates version", func(t *testing.T) {
+		mapper := New(false)
+		_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":1}}`), ToLinux)
+		_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":2}}`), ToWindows)
+		fork := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/fork","params":{"cwd":"C:\\work"}}`)
+		got, _ := mapper.Transform(fork, ToLinux)
+		want := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/fork","params":{"cwd":"/mnt/c/work"}}`)
+		if !sameJSON(got, want) {
+			t.Fatalf("fork = %s, want %s", got, want)
+		}
+	})
+
+	t.Run("non-command v2 permission subject is unchanged", func(t *testing.T) {
+		mapper := New(false)
+		_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
+		permission := []byte(`{"jsonrpc":"2.0","id":2,"method":"session/request_permission","params":{"subject":{"type":"file","cwd":"C:\\work"}}}`)
+		got, _ := mapper.Transform(permission, ToLinux)
+		if !sameJSON(got, permission) {
+			t.Fatalf("permission = %s, want unchanged %s", got, permission)
+		}
+	})
+}
+
+func TestSessionListResponseUsesRequestCorrelation(t *testing.T) {
+	mapper := New(true)
+	_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":"list","method":"session/list","params":{}}`), ToLinux)
+	got, _ := mapper.Transform([]byte(`{"jsonrpc":"2.0","id":"list","result":{"sessions":[{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}]}}`), ToWindows)
+	want := `{"jsonrpc":"2.0","id":"list","result":{"sessions":[{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}]}}`
+	if !sameJSON(got, []byte(want)) {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+}
