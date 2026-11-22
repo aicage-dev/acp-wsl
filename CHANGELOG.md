@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-22
+
+### Changed
+
+- Improved automated update detection for ACP schema dependencies.
+- Expanded version-specific test coverage for ACP path routing.
+- Updated CI linting configuration and GitHub Actions dependencies.
+
 ## [1.0.0] - 2026-11-01
 
 ### Added
