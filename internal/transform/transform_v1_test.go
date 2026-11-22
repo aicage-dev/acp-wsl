@@ -22,6 +22,42 @@ func TestPathsInKnownV1MethodFields(t *testing.T) {
 	}
 }
 
+func TestV1SessionUpdateKnownPathMappings(t *testing.T) {
+	tests := []struct {
+		name, input, want string
+	}{
+		{
+			"markdown plan path",
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"plan_update","plan":{"type":"markdown","planId":"plan","content":"# Plan","path":"C:\\work\\plan.md"}}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"plan_update","plan":{"type":"markdown","planId":"plan","content":"# Plan","path":"/mnt/c/work/plan.md"}}}}`,
+		},
+		{
+			"subagent workspace paths",
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"subagent_update","sessionId":"child","cwd":"C:\\work\\child","additionalDirectories":["D:\\shared"]}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"subagent_update","sessionId":"child","cwd":"/mnt/c/work/child","additionalDirectories":["/mnt/d/shared"]}}}`,
+		},
+		{
+			"session message chunk content",
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"session_message_chunk","messageId":"message","content":{"type":"image","data":"aW1hZ2U=","mimeType":"image/png","uri":"file:///C:/work/chunk.png"}}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"session_message_chunk","messageId":"message","content":{"type":"image","data":"aW1hZ2U=","mimeType":"image/png","uri":"file:///mnt/c/work/chunk.png"}}}}`,
+		},
+		{
+			"session message content",
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"session_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///C:/work/result.txt","text":"result"}}]}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"parent","update":{"sessionUpdate":"session_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///mnt/c/work/result.txt","text":"result"}}]}}}`,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			validateACPFixture(t, 1, []byte(test.input))
+			got, _ := New(true).Transform([]byte(test.input), ToLinux)
+			if !sameJSON(got, []byte(test.want)) {
+				t.Fatalf("got %s, want %s", got, test.want)
+			}
+		})
+	}
+}
+
 func TestV1PermissionToolCallPaths(t *testing.T) {
 	input := []byte(`{"jsonrpc":"2.0","id":4,"method":"session/request_permission","params":{"toolCall":{"locations":[{"path":"/mnt/c/file.go"}],"content":[{"type":"diff","path":"/mnt/c/file.go","newText":"x"}]}}}`)
 	got, _ := New(true).Transform(input, ToWindows)

@@ -19,13 +19,13 @@ func TestSessionUpdateKnownPathMappings(t *testing.T) {
 	}{
 		{
 			"message chunk content",
-			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message_chunk","messageId":"message","content":{"type":"image","uri":"file:///C:/work/chunk.png"}}}}`,
-			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message_chunk","messageId":"message","content":{"type":"image","uri":"file:///mnt/c/work/chunk.png"}}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message_chunk","messageId":"message","content":{"type":"image","data":"aW1hZ2U=","mimeType":"image/png","uri":"file:///C:/work/chunk.png"}}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message_chunk","messageId":"message","content":{"type":"image","data":"aW1hZ2U=","mimeType":"image/png","uri":"file:///mnt/c/work/chunk.png"}}}}`,
 		},
 		{
 			"message list content",
-			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///C:/work/result.txt"}}]}}}`,
-			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///mnt/c/work/result.txt"}}]}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///C:/work/result.txt","text":"result"}}]}}}`,
+			`{"jsonrpc":"2.0","method":"session/update","params":{"sessionId":"session","update":{"sessionUpdate":"agent_message","messageId":"message","content":[{"type":"resource","resource":{"uri":"file:///mnt/c/work/result.txt","text":"result"}}]}}}`,
 		},
 		{
 			"markdown plan path",

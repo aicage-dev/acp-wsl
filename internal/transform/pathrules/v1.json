@@ -79,6 +79,9 @@
       "selectors": [
         "update[sessionUpdate=terminal_update].cwd",
         "update[sessionUpdate=plan_update].plan[type=file].uri",
+        "update[sessionUpdate=plan_update].plan[type=markdown].path",
+        "update[sessionUpdate=subagent_update].cwd",
+        "update[sessionUpdate=subagent_update].additionalDirectories[]",
         "update[sessionUpdate=tool_call].toolCall.locations[].path",
         "update[sessionUpdate=tool_call_update].toolCall.locations[].path",
         "update[sessionUpdate=tool_call].toolCall.content[type=diff].path",
@@ -122,14 +125,14 @@
       "method": "session/update",
       "payload": "params",
       "selectors": [
-        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk].content[type=image].uri",
-        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk].content[type=resource_link].uri",
-        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk].content[type=resource_link].icons[].src",
-        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk].content[type=resource].resource.uri",
-        "update[sessionUpdate=user_message|agent_message|agent_thought].content[][type=image].uri",
-        "update[sessionUpdate=user_message|agent_message|agent_thought].content[][type=resource_link].uri",
-        "update[sessionUpdate=user_message|agent_message|agent_thought].content[][type=resource_link].icons[].src",
-        "update[sessionUpdate=user_message|agent_message|agent_thought].content[][type=resource].resource.uri"
+        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk|session_message_chunk].content[type=image].uri",
+        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk|session_message_chunk].content[type=resource_link].uri",
+        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk|session_message_chunk].content[type=resource_link].icons[].src",
+        "update[sessionUpdate=user_message_chunk|agent_message_chunk|agent_thought_chunk|compaction_summary_chunk|tool_call_content_chunk|session_message_chunk].content[type=resource].resource.uri",
+        "update[sessionUpdate=user_message|agent_message|agent_thought|session_message].content[][type=image].uri",
+        "update[sessionUpdate=user_message|agent_message|agent_thought|session_message].content[][type=resource_link].uri",
+        "update[sessionUpdate=user_message|agent_message|agent_thought|session_message].content[][type=resource_link].icons[].src",
+        "update[sessionUpdate=user_message|agent_message|agent_thought|session_message].content[][type=resource].resource.uri"
       ]
     },
     {
