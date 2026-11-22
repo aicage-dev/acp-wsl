@@ -127,7 +127,7 @@ jobs:
           gh release create "${RELEASE_TAG}" \
             dist/* \
             --repo "${GITHUB_REPOSITORY}" \
-            --target "${RELEASE_TAG}" \
+            --verify-tag \
             --notes "${RELEASE_NOTES}" \
             --generate-notes
 
