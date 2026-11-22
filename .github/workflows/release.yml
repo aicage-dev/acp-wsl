@@ -120,7 +120,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
-          TARGET_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           CHANGELOG_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${RELEASE_TAG}/CHANGELOG.md"
@@ -128,7 +127,7 @@ jobs:
           gh release create "${RELEASE_TAG}" \
             dist/* \
             --repo "${GITHUB_REPOSITORY}" \
-            --target "${TARGET_SHA}" \
+            --target "${RELEASE_TAG}" \
             --notes "${RELEASE_NOTES}" \
             --generate-notes
 
