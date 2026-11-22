@@ -20,13 +20,16 @@ It defines the schema-specific mappings. Other payload values are inspected by t
 
 ## Agent to client
 
-| Method                       | Field                                                            |
-|------------------------------|------------------------------------------------------------------|
-| `fs/read_text_file`          | `params.path`                                                    |
-| `fs/write_text_file`         | `params.path`                                                    |
-| `terminal/create`            | `params.cwd`                                                     |
-| `session/update`             | tool-call locations, v1 diff `path`, and typed content file URIs |
-| `session/request_permission` | tool-call locations, v1 diff `path`, and typed content file URIs |
+| Method                           | Field                                                                     |
+|----------------------------------|---------------------------------------------------------------------------|
+| `fs/read_text_file`              | `params.path`                                                             |
+| `fs/write_text_file`             | `params.path`                                                             |
+| `terminal/create`                | `params.cwd`                                                              |
+| `session/update` tool call       | tool-call locations, v1 diff `path`, and typed content file URIs          |
+| `session/update` plan update     | `update.plan.uri` for `file`; `update.plan.path` for `markdown`           |
+| `session/update` subagent update | `update.cwd`, `update.additionalDirectories[]`                            |
+| `session/update` messages        | typed resource/image file URIs in `update.content` and `update.content[]` |
+| `session/request_permission`     | tool-call locations, v1 diff `path`, and typed content file URIs          |
 
 ## Responses
 
