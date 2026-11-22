@@ -10,6 +10,13 @@
       ]
     },
     {
+      "method": "session/new",
+      "payload": "result",
+      "selectors": [
+        "availableCommands[type=skill].path"
+      ]
+    },
+    {
       "method": "session/resume",
       "payload": "params",
       "selectors": [
@@ -19,12 +26,26 @@
       ]
     },
     {
+      "method": "session/resume",
+      "payload": "result",
+      "selectors": [
+        "availableCommands[type=skill].path"
+      ]
+    },
+    {
       "method": "session/fork",
       "payload": "params",
       "selectors": [
         "cwd",
         "additionalDirectories[]",
         "mcpServers[type=stdio].command"
+      ]
+    },
+    {
+      "method": "session/fork",
+      "payload": "result",
+      "selectors": [
+        "availableCommands[type=skill].path"
       ]
     },
     {
@@ -40,6 +61,21 @@
       "selectors": [
         "sessions[].cwd",
         "sessions[].additionalDirectories[]"
+      ]
+    },
+    {
+      "method": "session/options",
+      "payload": "params",
+      "selectors": [
+        "cwd",
+        "additionalDirectories[]"
+      ]
+    },
+    {
+      "method": "session/options",
+      "payload": "result",
+      "selectors": [
+        "availableCommands[type=skill].path"
       ]
     },
     {
@@ -65,6 +101,10 @@
       "selectors": [
         "update[sessionUpdate=terminal_update].cwd",
         "update[sessionUpdate=plan_update].plan[type=file].uri",
+        "update[sessionUpdate=plan_update].plan[type=markdown].path",
+        "update[sessionUpdate=subagent_update].cwd",
+        "update[sessionUpdate=subagent_update].additionalDirectories[]",
+        "update[sessionUpdate=available_commands_update].availableCommands[type=skill].path",
         "update[sessionUpdate=tool_call].toolCall.locations[].path",
         "update[sessionUpdate=tool_call_update].toolCall.locations[].path",
         "update[sessionUpdate=tool_call].toolCall.content[type=diff].changes[].path",

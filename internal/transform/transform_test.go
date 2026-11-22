@@ -15,14 +15,14 @@ func TestSessionLifecycleAndListPaths(t *testing.T) {
 	}{
 		{
 			"v1 load",
-			`{"jsonrpc":"2.0","id":1,"method":"session/load","params":{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
-			`{"jsonrpc":"2.0","id":1,"method":"session/load","params":{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/load","params":{"sessionId":"session","cwd":"C:\\work","additionalDirectories":["D:\\lib"],"mcpServers":[]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/load","params":{"sessionId":"session","cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"],"mcpServers":[]}}`,
 			1,
 		},
 		{
 			"v1 resume",
-			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
-			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"sessionId":"session","cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"sessionId":"session","cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
 			1,
 		},
 		{
@@ -33,14 +33,20 @@ func TestSessionLifecycleAndListPaths(t *testing.T) {
 		},
 		{
 			"v2 resume",
-			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
-			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"sessionId":"session","cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/resume","params":{"sessionId":"session","cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
 			2,
 		},
 		{
 			"v2 list request",
 			`{"jsonrpc":"2.0","id":1,"method":"session/list","params":{"cwd":"C:\\work"}}`,
 			`{"jsonrpc":"2.0","id":1,"method":"session/list","params":{"cwd":"/mnt/c/work"}}`,
+			2,
+		},
+		{
+			"v2 options request",
+			`{"jsonrpc":"2.0","id":1,"method":"session/options","params":{"cwd":"C:\\work","additionalDirectories":["D:\\lib"]}}`,
+			`{"jsonrpc":"2.0","id":1,"method":"session/options","params":{"cwd":"/mnt/c/work","additionalDirectories":["/mnt/d/lib"]}}`,
 			2,
 		},
 	}
@@ -50,6 +56,7 @@ func TestSessionLifecycleAndListPaths(t *testing.T) {
 			if test.version == 2 {
 				_, _ = mapper.Transform([]byte(`{"jsonrpc":"2.0","id":0,"method":"initialize","params":{"protocolVersion":2}}`), ToLinux)
 			}
+			validateACPFixture(t, test.version, []byte(test.input))
 			got, _ := mapper.Transform([]byte(test.input), ToLinux)
 			if !sameJSON(got, []byte(test.want)) {
 				t.Fatalf("got %s, want %s", got, test.want)
